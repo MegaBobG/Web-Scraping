@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<People>
+    <Person>
+        <First_name>Tom</First_name>
+        <Last_name>Smith</Last_name>
+        <Weight>80</Weight>
+        <Is_male>true</Is_male>
+    </Person>
+    <Person>
+        <First_name>Alice</First_name>
+        <Last_name>Johnson</Last_name>
+        <Weight>92</Weight>
+        <Is_male>false</Is_male>
+    </Person>
+    <Person>
+        <First_name>Bob</First_name>
+        <Last_name>Williams</Last_name>
+        <Weight>75</Weight>
+        <Is_male>true</Is_male>
+    </Person>
+    <Person>
+        <First_name>Emma</First_name>
+        <Last_name>Brown</Last_name>
+        <Weight>88</Weight>
+        <Is_male>false</Is_male>
+    </Person>
+    <Person>
+        <First_name>David</First_name>
+        <Last_name>Jones</Last_name>
+        <Weight>107</Weight>
+        <Is_male>true</Is_male>
+    </Person>
+</People>

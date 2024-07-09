@@ -1,0 +1,32 @@
+[
+    {
+        "First name": "Tom",
+        "Last_name": "Smith",
+        "Weigth": 80,
+        "Is male": true
+    },
+    {
+        "First name": "Alice",
+        "Last_name": "Johnson",
+        "Weigth": 92,
+        "Is male": false
+    },
+    {
+        "First name": "Bob",
+        "Last_name": "Williams",
+        "Weigth": 75,
+        "Is male": true
+    },
+    {
+        "First name": "Emma",
+        "Last_name": "Brown",
+        "Weigth": 88,
+        "Is male": false
+    },
+    {
+        "First name": "David",
+        "Last_name": "Jones",
+        "Weigth": 107,
+        "Is male": true
+    }
+]
