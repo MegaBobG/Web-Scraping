@@ -1,13 +1,8 @@
 import os
-import re
 import hashlib
 import json
-from time import time
-from typing import List
-
 from bs4 import BeautifulSoup
 import requests
-from multiprocessing.pool import Pool
 
 
 def get_content(url):
@@ -16,6 +11,7 @@ def get_content(url):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
             content = f.read()
+            print('get from file')
         return content
 
     response = requests.get(
@@ -26,6 +22,7 @@ def get_content(url):
     )
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(response.text)
+    print('get from server')
     return response.text
 
 
@@ -46,29 +43,21 @@ def parse_html():
     with open('data_BBC.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-    print(data)
-    print(len(data))
-
 
 def parse_page(page_url):
     content = get_content(page_url)
 
     soup = BeautifulSoup(content, 'lxml')
 
-    # data = []
+    data = []
 
     blocks = soup.find('div', {'data-component': 'topic-list'})
     if blocks:
         list_items = blocks.find_all('li')
-        for li in list_items:
-            link = li.find('a')
-            if link:
-                href = link.get('href')
-                links = link.text.strip()
-                # data.append({'Link': text})
-    # print(data)
+        topics = [li.find('a').text.strip() for li in list_items if li.find('a')]
+        data.append({'Link': page_url, 'Topics': topics})
+    return data
 
-    return {'url': page_url, 'site': links}
 
 
 def parse_sync():
@@ -79,17 +68,19 @@ def parse_sync():
 
     data = []
 
-    blocks = soup.find_all('div', {'type': ['article', 'topic']})
+    blocks = soup.find_all('div', {'type': ['article', 'topic']})[:6]
+    print(blocks)
     for block in blocks:
         href = block.find('a').get('href').strip()
         full_url = 'https://www.bbc.com/' + href
-        page_data = parse_page(url)
-        data.append(page_data)
+        page_data = parse_page(full_url)
+        if page_data:
+            data.extend(page_data)
 
-    with open('sync.json', 'w', encoding='utf-8') as f:
+    with open('sync_BBC.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == '__main__':
     # parse_html()
-    parse_page('https://www.bbc.com/sport/football/articles/c134enzzg26o')
+    parse_sync()
