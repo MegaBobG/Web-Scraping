@@ -1,7 +1,7 @@
 import re
 import hashlib
 import requests
-from lxml import etree
+
 import json
 import sqlite3
 
@@ -21,24 +21,9 @@ def get_content(url):
         return response.text
 
 
-# Функция для парсинга HTML с использованием XPath
-# def parse_html_xpath(html_content):
-#     tree = etree.HTML(html_content)
-#     job_cards = []
-#     base_url = 'https://www.lejobadequat.com'
-#     for element in tree.xpath('//h3[@class="jobCard_title"]'):
-#         title = element.text.strip()
-#         relative_url = element.xpath('./parent::a/@href')[0]
-#         full_url = base_url + relative_url
-#         job_cards.append([title, full_url])
-#     print(job_cards)
-#     return job_cards
-
-
-# Функция для парсинга HTML с использованием регулярных выражений и и измененных заголовков
 def parse_html_reg():
-    proxy = '116.212.110.18'
-    port = 58080
+    proxy = '67.43.227.226'
+    port = 18123
 
     proxies = {
         'http': f'http://{proxy}:{port}',
@@ -53,26 +38,23 @@ def parse_html_reg():
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'}
     )
 
-
     # Паттерн для извлечения заголовков вакансий
     title_pattern = r'<h3\s+class="jobCard_title">(.+?)<\/h3>'
 
     # Паттерн для извлечения URL из ссылки на вакансию
     url_pattern = r'<a\s+[^>]*href="([^"]+)"[^>]*class="jobCard_link"'
-    urls = re.search(url_pattern, response.text).group(1)
 
     job_cards = []
 
     titles = re.findall(title_pattern, response.text)
-    for title in titles:
-        for url in urls:
-            job_cards.append([title, url])
+    urls = re.findall(url_pattern, response.text)
+
+    for title, url in zip(titles, urls):
+        job_cards.append({'title': title, 'url': url})
 
     return job_cards
 
 
-
-# Функция для записи данных в JSON файл
 def write_json(job_cards):
     if job_cards:
         with open('jobs.json', 'w', encoding='utf-8') as f:
@@ -82,7 +64,6 @@ def write_json(job_cards):
         print("No data to save.")
 
 
-# Функция для записи данных в базу данных SQLite
 def write_sqlite(job_cards):
     filename = 'jobs.db'
 
@@ -99,21 +80,21 @@ def write_sqlite(job_cards):
     """
     cursor.execute(sql)
 
+
     # Вставка данных в таблицу
     for job in job_cards:
         cursor.execute("""
             INSERT INTO jobs (title, url)
             VALUES (?, ?)
-        """, (job[0], job[1]))
+        """, (job['title'], job['url']))
 
     conn.commit()
     conn.close()
     print("Data saved to jobs.db")
 
 
-if __name__ == '__main__':
-    page_url = 'https://www.lejobadequat.com/emplois'
-    page_html_content = get_content(page_url)
-    jobs = parse_html_xpath(page_html_content)
-    write_json(jobs)
-    write_sqlite(jobs)
+# Пример использования:
+if __name__ == "__main__":
+    jobs_data = parse_html_reg()
+    write_json(jobs_data)
+    write_sqlite(jobs_data)
